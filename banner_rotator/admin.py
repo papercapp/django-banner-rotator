@@ -36,7 +36,7 @@ class CampaignAdmin(admin.ModelAdmin):
 
 
 class BannerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'campaign', 'weight', 'url', 'views', 'is_active')
+    list_display = ('name', 'campaign', 'weight', 'url', 'views', 'clicks', 'is_active')
     list_filter = ('campaign', 'places', 'is_active')
     date_hierarchy = 'created_at'
     fieldsets = (

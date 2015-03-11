@@ -119,7 +119,7 @@ class Banner(models.Model):
     def click(self, request):
         click = {
             'banner': self,
-            'place': request.GET['place_slug'],
+            'place': request.GET['place'],
             'ip': request.META.get('REMOTE_ADDR'),
             'user_agent': request.META.get('HTTP_USER_AGENT'),
             'referrer': request.META.get('HTTP_REFERER'),
@@ -149,6 +149,7 @@ class Banner(models.Model):
 
 class Click(models.Model):
     banner = models.ForeignKey(Banner, related_name="clicks")
+    place = models.ForeignKey(Place, related_name="clicks")
     user = models.ForeignKey(User, null=True, blank=True, related_name="banner_clicks")
     datetime = models.DateTimeField("Clicked at", auto_now_add=True)
     ip = models.IPAddressField(null=True, blank=True)

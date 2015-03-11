@@ -84,6 +84,8 @@ class Banner(models.Model):
     max_views = models.IntegerField(_('Max views'), default=0)
     max_clicks = models.IntegerField(_('Max clicks'), default=0)
 
+    clicks = models.IntegerField(_("Clicks"), default=0)
+
     weight = models.IntegerField(_('Weight'), help_text=_("A ten will display 10 times more often that a one."),
         choices=[[i, i] for i in range(1, 11)], default=5)
 
@@ -112,6 +114,7 @@ class Banner(models.Model):
         return self.file.name.lower().endswith("swf")
 
     def view(self):
+        # fixme: debounce via cache later
         self.views = models.F('views') + 1
         self.save()
         return ''
@@ -128,6 +131,10 @@ class Banner(models.Model):
         if request.user.is_authenticated():
             click['user'] = request.user
 
+        # fixme: debounce via cache later
+        self.clicks = models.F('clicks') + 1
+        self.save()
+
         return Click.objects.create(**click)
 
     @models.permalink
@@ -136,7 +143,7 @@ class Banner(models.Model):
 
     def admin_clicks_str(self):
         if self.max_clicks:
-            return '%s / %s' % (self.clicks, self.max_clicks)
+            return '%s / %s' % (self.clicks.count(), self.max_clicks)
         return '%s' % self.clicks
     admin_clicks_str.short_description = _('Clicks')
 
@@ -148,7 +155,7 @@ class Banner(models.Model):
 
 
 class Click(models.Model):
-    banner = models.ForeignKey(Banner, related_name="clicks")
+    banner = models.ForeignKey(Banner, related_name="click_objects")
     place = models.ForeignKey(Place, related_name="clicks")
     user = models.ForeignKey(User, null=True, blank=True, related_name="banner_clicks")
     datetime = models.DateTimeField("Clicked at", auto_now_add=True)

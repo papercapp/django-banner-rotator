@@ -8,9 +8,6 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Deleting field 'Banner.clicks'
-        db.delete_column(u'banner_rotator_banner', 'clicks')
-
 
         # Changing field 'Click.place'
         db.alter_column(u'banner_rotator_click', 'place_id', self.gf('django.db.models.fields.related.ForeignKey')(default=0, to=orm['banner_rotator.Place']))
@@ -19,11 +16,6 @@ class Migration(SchemaMigration):
         db.alter_column(u'banner_rotator_click', 'user_agent', self.gf('django.db.models.fields.TextField')(null=True))
 
     def backwards(self, orm):
-        # Adding field 'Banner.clicks'
-        db.add_column(u'banner_rotator_banner', 'clicks',
-                      self.gf('django.db.models.fields.IntegerField')(default=0),
-                      keep_default=False)
-
 
         # Changing field 'Click.place'
         db.alter_column(u'banner_rotator_click', 'place_id', self.gf('django.db.models.fields.related.ForeignKey')(null=True, to=orm['banner_rotator.Place']))

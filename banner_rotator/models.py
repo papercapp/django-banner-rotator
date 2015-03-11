@@ -119,7 +119,7 @@ class Banner(models.Model):
     def click(self, request):
         click = {
             'banner': self,
-            'place': request.GET['place'],
+            'place_id': request.GET['place'],
             'ip': request.META.get('REMOTE_ADDR'),
             'user_agent': request.META.get('HTTP_USER_AGENT'),
             'referrer': request.META.get('HTTP_REFERER'),

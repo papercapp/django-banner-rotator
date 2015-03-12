@@ -1,4 +1,4 @@
-#-*- coding:utf-8 -*-
+# coding=utf-8
 
 from __future__ import unicode_literals
 try:
@@ -16,9 +16,6 @@ from banner_rotator.managers import BannerManager
 
 
 def get_banner_upload_to(instance, filename):
-    """
-    Формирует путь для загрузки файлов
-    """
     filename_parts = filename.split('.')
     ext = '.%s' % filename_parts[-1] if len(filename_parts) > 1 else ''
     new_filename = md5(('%s-%s' % (filename, time())).encode('utf-8')).hexdigest()
@@ -27,8 +24,8 @@ def get_banner_upload_to(instance, filename):
 
 class Campaign(models.Model):
     name = models.CharField(_('Name'), max_length=255)
-    created_at = models.DateTimeField(_('Create at'), auto_now_add=True)
-    updated_at = models.DateTimeField(_('Update at'), auto_now=True)
+    created_at = models.DateTimeField(_('Created at'), auto_now_add=True)
+    updated_at = models.DateTimeField(_('Updated at'), auto_now=True)
 
     class Meta:
         verbose_name = _('campaign')
@@ -120,6 +117,9 @@ class Banner(models.Model):
         return ''
 
     def click(self, request):
+        if request.user.is_staff:
+            return
+        
         click = {
             'banner': self,
             'place_id': request.GET['place'],

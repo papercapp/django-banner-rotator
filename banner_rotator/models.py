@@ -119,11 +119,11 @@ class Banner(models.Model):
     def click(self, request):
         if request.user.is_staff:
             return
-        
+
         click = {
             'banner': self,
             'place_id': request.GET['place'],
-            'ip': request.META.get('REMOTE_ADDR'),
+            'ip': request.META.get("HTTP_X_REAL_IP", request.META.get("HTTP_X_FORWARDED_FOR", request.META.get("REMOTE_ADDR"))),
             'user_agent': request.META.get('HTTP_USER_AGENT'),
             'referrer': request.META.get('HTTP_REFERER'),
         }

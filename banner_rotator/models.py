@@ -13,6 +13,7 @@ from django.core.validators import MaxLengthValidator
 from django.utils.translation import ugettext_lazy as _
 
 from banner_rotator.managers import BannerManager
+from signals import banner_clicked, banner_viewed
 
 
 def get_banner_upload_to(instance, filename):
@@ -110,32 +111,19 @@ class Banner(models.Model):
     def is_swf(self):
         return self.file.name.lower().endswith("swf")
 
-    def view(self):
-        # fixme: debounce via cache later
-        self.views = models.F('views') + 1
-        self.save()
+    def view(self, request=None):
+        banner_viewed.send(sender=self, info=None, request=request)
         return ''
 
     def click(self, request):
-        if request.user.is_staff:
-            return
-
-        click = {
+        info = {
             'banner': self,
             'place_id': request.GET['place'],
             'ip': request.META.get("HTTP_X_REAL_IP", request.META.get("HTTP_X_FORWARDED_FOR", request.META.get("REMOTE_ADDR"))),
             'user_agent': request.META.get('HTTP_USER_AGENT'),
             'referrer': request.META.get('HTTP_REFERER'),
         }
-
-        if request.user.is_authenticated():
-            click['user'] = request.user
-
-        # fixme: debounce via cache later
-        self.clicks = models.F('clicks') + 1
-        self.save()
-
-        return Click.objects.create(**click)
+        banner_clicked.send(sender=self, info=info, request=request)
 
     @models.permalink
     def get_absolute_url(self):

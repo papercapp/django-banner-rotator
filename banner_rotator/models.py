@@ -115,6 +115,10 @@ class Banner(models.Model):
         banner_viewed.send(sender=self, info=None, request=request)
         return ''
 
+    def record_view(self):
+        self.views = models.F('views') + 1
+        self.save()
+
     def click(self, request):
         info = {
             'banner': self,
@@ -124,6 +128,13 @@ class Banner(models.Model):
             'referrer': request.META.get('HTTP_REFERER'),
         }
         banner_clicked.send(sender=self, info=info, request=request)
+
+    def record_click(self, info):
+        # fixme: debounce via cache later
+        self.clicks = models.F('clicks') + 1
+        self.save()
+
+        return Click.objects.create(**info)
 
     @models.permalink
     def get_absolute_url(self):

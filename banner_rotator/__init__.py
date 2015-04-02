@@ -2,7 +2,7 @@
 
 __all__ = ['get_version']
 
-VERSION = (0, 2, 3, 'beta')
+VERSION = (0, 2, 3, 'beta', 1)
 
 
 def get_version():

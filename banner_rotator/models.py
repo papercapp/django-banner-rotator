@@ -120,9 +120,13 @@ class Banner(models.Model):
         self.save()
 
     def click(self, request):
+        place = request.GET.get('place')
+        if not place:
+            return
+
         info = {
             'banner': self,
-            'place_id': request.GET['place'],
+            'place_id': place,
             'ip': request.META.get("HTTP_X_REAL_IP", request.META.get("HTTP_X_FORWARDED_FOR", request.META.get("REMOTE_ADDR"))),
             'user_agent': request.META.get('HTTP_USER_AGENT'),
             'referrer': request.META.get('HTTP_REFERER'),
